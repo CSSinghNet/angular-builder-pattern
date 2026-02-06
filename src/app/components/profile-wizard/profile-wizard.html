@@ -1,8 +1,9 @@
 <div class="wizard-container">
-  <h2>Profile Wizard (Step {{ currentStep() }} / 4)</h2>
+  @if(currentStep() !==5){
+    <h2 >Profile Wizard (Step {{ currentStep() }} / 4)</h2>
+  }
 
   <form [formGroup]="profileForm">
-
     <!-- Step 1: Basic Info -->
     @if (currentStep() === 1) {
       <div class="step-content">

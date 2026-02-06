@@ -15,7 +15,7 @@ import { ProfileSummary } from '../profile-summary/profile-summary';
 @Component({
   selector: 'app-profile-wizard',
   standalone: true,
-  imports: [ReactiveFormsModule,JsonPipe,ProfileSummary],
+  imports: [ReactiveFormsModule,ProfileSummary],
   templateUrl: './profile-wizard.html',
   styleUrl: './profile-wizard.css'
 })

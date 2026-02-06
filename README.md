@@ -1,59 +1,113 @@
-# AngularBuilderPattern
+# Angular Profile Wizard – Multi-Step Reactive Form + Builder Pattern
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.1.
+Modern Angular application demonstrating a **multi-step profile creation wizard** using:
 
-## Development server
+- **Reactive Forms** (FormBuilder, FormArray, validation)
+- **Angular Signals** for lightweight reactive state (step navigation)
+- **Builder Design Pattern** for clean, fluent, immutable object construction
+- **New Angular control flow** syntax (`@if`, `@for`, `@empty`)
+- Standalone components (Angular 17+ style)
 
-To start a local development server, run:
+Ideal for learning / portfolio / job portal / freelance onboarding flows.
 
-```bash
-ng serve
+## Features
+
+- 4-step wizard + beautiful final profile summary card
+- Fully **reactive forms** (no `ngModel` two-way binding anywhere)
+- Dynamic **FormArray** for skills & work experience (add/remove entries)
+- Temporary reactive `FormControl`s for "add new" inputs
+- **Signal-based** step navigation (`currentStep` signal)
+- **Fluent Builder Pattern** (`UserProfileBuilder`) with chainable API
+- Immutable final `UserProfile` object (readonly properties + array copies)
+- Real-time validation & error messages
+- Nice profile summary card with sections (About, Skills tags, Experience list)
+- Basic responsive SCSS styling
+- Strict TypeScript mode (fixed common issues: property init, readonly assignments)
+
+## Tech Stack
+
+| Technology              | Version / Note                          | Purpose                              |
+|-------------------------|-----------------------------------------|--------------------------------------|
+| Angular                 | 17+ (standalone components)             | Core framework                       |
+| Reactive Forms          | `@angular/forms`                        | Complex form handling                |
+| Signals                 | Built-in (signal, update)               | Step tracking & reactivity           |
+| TypeScript              | Strict mode                             | Type safety                          |
+| SCSS                    | Component-scoped                        | Styling                              |
+| New Control Flow        | `@if`, `@for`, `@empty`                 | Modern template syntax               |
+| No external libraries   | Pure Angular                            | Minimal dependencies                 |
+
+## Why Signals?
+
+We use Angular Signals for simple reactive state (current step tracking):
+
+```ts
+currentStep = signal(1);
+
+nextStep() {
+  this.currentStep.update(v => v + 1);
+}
+
+```
+## Benefits:
+- Fine-grained reactivity → only affected parts re-render
+- No RxJS boilerplate for simple cases
+- Cleaner than BehaviorSubject + async pipe
+- Aligns with Angular's future direction (signal inputs/outputs)
+- Perfect for wizard/stepper-like flows
+
+## Why Builder Pattern?
+- The UserProfile has many optional + array fields.
+
+Without Builder (telescoping constructor nightmare):
+
+```ts
+new UserProfile(name, email, undefined, headline, bio, location, skills, experiences, isOpenToWork, …);
+
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+With Builder (clean & readable):
 
-## Code scaffolding
+```ts
+new UserProfileBuilder(name, email)
+  .setHeadline("Senior Angular Developer")
+  .setBio("Building scalable apps since 2018")
+  .addSkill("RxJS")
+  .addSkill("NgRx")
+  .addExperience("XYZ Corp", "Frontend Lead", 4)
+  .setOpenToWork(true)
+  .build();
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Key Advantages:
+- Readable fluent API
+- Skip optional fields easily
+- Enforce mandatory fields in constructor
+- Add validation/defaults in setters
+- Internal mutable state → final immutable object
+- Easy to extend (add new fields without breaking old code)
+- Great for testing (partial builds)
+- Separation of concerns (form → builder → API payload)
 
-```bash
-ng generate --help
+## Project Structure
+```text
+
+src/app/
+├── models/
+│   └── user-profile.model.ts             # UserProfile interface (readonly) + types
+├── builders/
+│   └── user-profile.builder.ts           # Fluent Builder with mutable internal state
+├── components/
+│   ├── profile-wizard/
+│   │   ├── profile-wizard.component.ts
+│   │   ├── profile-wizard.component.html   # New control flow + reactive form
+│   │   └── profile-wizard.component.scss
+│   └── profile-summary/
+│       ├── profile-summary.component.ts
+│       ├── profile-summary.component.html  # Nice profile card
+│       └── profile-summary.component.scss
+├── app.component.ts                      # Root (hosts wizard)
+└── main.ts
+
 ```
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

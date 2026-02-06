@@ -1,0 +1,161 @@
+<div class="wizard-container">
+  <h2>Profile Wizard (Step {{ currentStep() }} / 4)</h2>
+
+  <form [formGroup]="profileForm">
+
+    <!-- Step 1: Basic Info -->
+    @if (currentStep() === 1) {
+      <div class="step-content">
+        <label>Name*:</label>
+        <input formControlName="name" />
+        @if (profileForm.get('name')?.hasError('required') && profileForm.get('name')?.touched) {
+          <small class="error">Name is required</small>
+        }
+        @if (profileForm.get('name')?.hasError('minlength') && profileForm.get('name')?.touched) {
+          <small class="error">Name must be at least 2 characters</small>
+        }
+
+        <label>Email*:</label>
+        <input formControlName="email" type="email" />
+        @if (profileForm.get('email')?.hasError('required') && profileForm.get('email')?.touched) {
+          <small class="error">Email is required</small>
+        }
+        @if (profileForm.get('email')?.hasError('email') && profileForm.get('email')?.touched) {
+          <small class="error">Invalid email format</small>
+        }
+
+        <div class="buttons">
+          <button type="button" (click)="nextStep()" 
+                  [disabled]="profileForm.get('name')?.invalid || profileForm.get('email')?.invalid">
+            Next
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Step 2: More Info -->
+    @if (currentStep() === 2) {
+      <div class="step-content">
+        <label>Phone:</label>
+        <input formControlName="phone" />
+
+        <label>Professional Headline:</label>
+        <input formControlName="headline" />
+
+        <label>Location:</label>
+        <input formControlName="location" />
+
+        <div class="buttons">
+          <button type="button" (click)="prevStep()">Back</button>
+          <button type="button" (click)="nextStep()">Next</button>
+        </div>
+      </div>
+    }
+
+    <!-- Step 3: Skills -->
+    @if (currentStep() === 3) {
+      <div class="step-content">
+        <label>Skills:</label>
+        <div class="add-row">
+          <input [formControl]="newSkillControl" 
+                 placeholder="e.g. Angular, TypeScript" 
+                 (keyup.enter)="addSkill()" />
+          <button type="button" (click)="addSkill()"
+                  [disabled]="!newSkillControl.value?.trim()">
+            Add
+          </button>
+        </div>
+
+        <ul class="list">
+          @for (skill of skillsArray.controls; track $index; let i = $index) {
+            <li>
+              {{ skill.value }}
+              <button type="button" class="remove-btn" (click)="removeSkill(i)">×</button>
+            </li>
+          } @empty {
+            <li class="empty">No skills added yet</li>
+          }
+        </ul>
+
+        <div class="buttons">
+          <button type="button" (click)="prevStep()">Back</button>
+          <button type="button" (click)="nextStep()">Next</button>
+        </div>
+      </div>
+    }
+
+    <!-- Step 4: Experience & Availability -->
+    @if (currentStep() === 4) {
+      <div class="step-content">
+        <h4>Add Work Experience</h4>
+        <div class="add-row experience-row">
+          <input [formControl]="newCompanyControl" placeholder="Company" />
+          <input [formControl]="newRoleControl" placeholder="Role / Position" />
+          <input type="number" [formControl]="newYearsControl" placeholder="Years" min="1" />
+          <button type="button" (click)="addExperience()"
+                  [disabled]="!newCompanyControl.value?.trim() || !newRoleControl.value?.trim() || !newYearsControl.value || newYearsControl.value < 1">
+            Add
+          </button>
+        </div>
+
+        <ul class="list">
+          @for (exp of experiencesArray.controls; track $index; let i = $index) {
+            <li>
+              <strong>{{ exp.get('company')?.value }}</strong> — 
+              {{ exp.get('role')?.value }} 
+              ({{ exp.get('years')?.value }} yrs)
+              <button type="button" class="remove-btn" (click)="removeExperience(i)">×</button>
+            </li>
+          } @empty {
+            <li class="empty">No experience added yet</li>
+          }
+        </ul>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="isOpenToWork" />
+          Open to new opportunities / Freelance work
+        </label>
+
+        <div class="buttons">
+          <button type="button" (click)="prevStep()">Back</button>
+          <button type="button" (click)="buildProfile()"
+                  [disabled]="profileForm.invalid">
+            Finish & Generate Profile
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Step 5: Summary -->
+    <!-- @if (currentStep() === 5 && finalProfile()) {
+      <div class="summary">
+        <h3>Profile Generated Successfully!</h3>
+        <pre>{{ finalProfile() | json }}</pre>
+        <p style="text-align: center; margin-top: 20px;">
+          <button type="button" (click)="currentStep.set(1)">Start Over</button>
+        </p>
+      </div>
+    } -->
+
+    <!-- Step 5: Summary -->
+@if (currentStep() === 5 && finalProfile()) {
+  <div class="summary">
+    <h2 style="text-align: center; margin-bottom: 32px;">Your Professional Profile</h2>
+    
+    <app-profile-summary [profile]="finalProfile()!" />
+
+    <div style="text-align: center; margin-top: 40px;">
+      <button type="button" (click)="currentStep.set(1)">Edit Profile</button>
+      <button type="button" (click)="currentStep.set(1)" style="margin-left: 16px; background: #6c757d;">
+        Start New
+      </button>
+    </div>
+
+    <!-- <pre style="margin-top: 40px; background: #f8f9fa; padding: 16px; border-radius: 8px;">
+      {{ finalProfile() | json }}
+    </pre> -->
+  </div>
+}
+
+  </form>
+</div>
